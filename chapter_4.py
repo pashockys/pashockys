@@ -14,3 +14,7 @@ print(len(string_1), "--showing length of string")
 
 string_2 = "\npizda\t"
 print(string_2.strip(), "--cool method for avoiding spec symbols from the begining or from the end")
+string_3 = "hui, zhopa, pizda"
+print(string_3.split(), "-- splitting your string")
+print(string_3.split("z"), "-- splitting your string with some symbol, that you choose")
+
