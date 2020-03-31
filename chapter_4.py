@@ -40,3 +40,50 @@ dict_0 = {
 }
 print(f"my new awesome dict:{dict_0}")
 print(f"{dict_0['roflan']}")  # printing one element of dict
+'''
+Tuple
+'''
+
+tuple_1 = tuple('element')
+print(tuple_1)
+
+tuple_2 = 'element'
+print(tuple_2)
+
+tuple_3 = tuple(list_0)  # tuple from list
+print(tuple_3)
+'''
+task 4.1
+'''
+nat = 'ip nat inside source list ACL interface FastEthernet0/1 overload'
+nat = nat.replace('FastEthernet', 'GigabitEthernet')
+print(nat)
+'''
+task 4.2
+'''
+mac = 'AAAA:BBBB:CCCC'
+mac = mac.replace(':', '.')
+print(mac)
+'''
+task 4.3
+'''
+config = 'switchport trunk allowed vlan 1,3,10,20,30,100'
+config_new = config.split()[-1].split(',')
+print(config_new)
+
+'''
+task 4.4
+'''
+vlans = [10, 20, 30, 1, 2, 100, 10, 30, 3, 4, 10]
+vlans_new = sorted(list(set(vlans)))
+print(vlans_new, vlans)
+'''
+task 4.5
+'''
+command1 = 'switchport trunk allowed vlan 1,2,3,5,8'
+command2 = 'switchport trunk allowed vlan 1,3,8,9'
+
+command1_new = set(command1)
+command2_new = set(command2)
+print(f"first command{command1_new} vsds{command2_new}")
+
