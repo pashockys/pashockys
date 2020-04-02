@@ -82,8 +82,40 @@ task 4.5
 '''
 command1 = 'switchport trunk allowed vlan 1,2,3,5,8'
 command2 = 'switchport trunk allowed vlan 1,3,8,9'
-
-command1_new = set(command1)
-command2_new = set(command2)
-print(f"first command{command1_new} vsds{command2_new}")
-
+command1_new = set(command1[command1.find('1')::])
+command1_new.discard(',')
+command2_new = set(command2[command2.find('1')::])
+command2_new.discard(',')
+command_intersection = sorted(list(command1_new & command2_new))
+print(command_intersection)
+'''
+task 4.6
+'''
+ospf_route = 'O        10.0.24.0/24 [110/41] via 10.0.13.3, 3d18h, FastEthernet0/0'
+ospf_route = ospf_route.split()
+print(ospf_route)
+# Protocol:              OSPF
+# Prefix:                10.0.24.0/24
+# AD/Metric:             110/41
+# Next-Hop:              10.0.13.3
+# Last update:           3d18h
+# Outbound Interface:    FastEthernet0/0
+print(f"Protocol:        OSPF\nPrefix:{ospf_route[1]:>22}\nAD/Metric:{ospf_route[2][1:-1]:>13}\nNext-Hop:{ospf_route[4][:-1]:>17}\nLast update:{ospf_route[5][:-1]:>10}\nOutbound Interface:{ospf_route[6]:>10}")
+'''
+task 4.7
+'''
+mac = 'AAAA:BBBB:CCCC'
+mac = mac.split(":")
+bin_mac = ''
+for i in range(len(mac)):
+    bin_mac += str(bin(int(mac[i], 16)))
+print(bin_mac.replace('0b', ''))
+'''
+task 4.8
+'''
+ip_template = '''
+IP address:
+{0:<8} {1:<8} {2:<8} {3:<8}
+{0:08b} {1:08b} {2:08b} {3:08b}
+'''
+print(ip_template.format(192, 168, 3, 1))
