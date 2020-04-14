@@ -8,26 +8,37 @@ task 6.1
 #     cisco_mac.append(element.replace(':', '.'))
 # print(cisco_mac)
 '''
-task 6.2
+task 6.2ab
 '''
 
 
 while True:
     raw_address = input('enter ip address like this "10.1.1.1": ')
+    set_of_address = set(raw_address)
+    # allowed_symbols = set('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.')
+    allowed_symbols = set('0123456789.')
+    for i in set_of_address:
+        a = False
+        if i not in allowed_symbols:
+            print("you can use only digits and dot")
+            break
+        a = True
+    if a == False:
+        continue
     address = raw_address.split('.')
     if len(address) != 4:
         print('must be 4 octets')
         continue
-    for i in len(address):
-        print(address)
-        print(i)
-        if address[i] > 255:
+    for i in range(len(address)):
+        a = False
+        if int(address[i]) > 255:
             print("you can't type digit more than 255 in octet")
-            continue
-    print('well done, address is correct')
-
-
-
+            break
+        a = True
+    if a == True:
+        print('well done, address is correct')
+        break
+    continue
 type = 'unused'
 if int(address[0]) >= 1 and int(address[0])<= 223:
     type = 'unicast'
