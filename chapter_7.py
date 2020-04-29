@@ -49,8 +49,36 @@ task 7.2
 #             continue
 #         print(line.strip())
 '''
-task 7.3
+task 7.3a
 '''
+# try:
+#     path = '/home/pashockys/progi_python/pyneng-examples-exercises/exercises/07_files/CAM_table.txt'
+#     open(path, 'r')
+# except FileNotFoundError:
+#     print('It seems that you are not at home')
+#     path = '/home/pashockys/Scripts/Natasha/pyneng-examples-exercises/exercises/07_files/CAM_table.txt'
+# with open(path, 'r') as f:
+#     alpha = f.readlines()[6:]
+# for line in alpha:
+#     if "DYNAMIC" in line:
+#         alpha[alpha.index(line)] = line.replace('DYNAMIC', '').strip()
+# output = []
+# for line in sorted(alpha):
+#     output.append(int(line.split(' ')[0]))
+# output = sorted(output)
+# for item in output:
+#     for line in alpha:
+#         if item == int(line.split(' ')[0]):
+#             print(line)
+#             alpha.remove(line)
+#         else:
+#             continue
+#         break
+
+'''
+task 7.3b
+'''
+vlan_required = input('enter vlan number you want to see: ').split(',')
 try:
     path = '/home/pashockys/progi_python/pyneng-examples-exercises/exercises/07_files/CAM_table.txt'
     open(path, 'r')
@@ -61,7 +89,14 @@ with open(path, 'r') as f:
     alpha = f.readlines()[6:]
 for line in alpha:
     if "DYNAMIC" in line:
-        # alpha[alpha.index(line)] = line.replace('DYNAMIC', '').strip()
-        print(line.replace('DYNAMIC', '').strip())
+        alpha[alpha.index(line)] = line.replace('DYNAMIC', '').strip()
 
-# print(alpha)
+for vlan in vlan_required:
+    match = False
+    for line in alpha:
+        if vlan == line.split(' ')[0]:
+            match = True
+            print(line)
+    if match == False:
+        print(f"there is no such vlan as {vlan}")
+# print(vlan_required)
