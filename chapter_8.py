@@ -69,7 +69,7 @@ r1 = {'IOS': '15.4',
 test_dict_2 = {key.lower(): value for key, value in r1.items() }
 # print(test_dict_2)
 
-# the same task as previous one, but you need do to it for several dict in dict
+# the same task as previous one, but you need do to it for several dicts in dict
 london_co = {
     'r1' : {
         'hostname': 'london_r1',
@@ -103,5 +103,30 @@ london_co = {
 #     for key, value in london_co[device].items():
 #         test_dict_3[device][key.lower()] = value
 
-test_dict_3 = {device: {key.lower(): value for device in london_co} for key, value in london_co[device].items()}
-print(test_dict_3)
+# test_dict_3 = {device: {key.lower(): value for device in london_co} for key, value in london_co[device].items()}
+test_dict_3 = {device: {key.lower(): value for key, value in london_co[device].items()} for device in london_co}
+# print(test_dict_3)
+
+'''
+Working with Dicts
+'''
+# TASK: you should filter given file so it must show intf only if there are address assigned
+try:
+    path = '/home/pashockys/progi_python/pyneng-examples-exercises/examples/08_python_basic_examples/sh_ip_int_br.txt'
+    open(path, 'r')
+except FileNotFoundError:
+    print('It seems that you are not at home')
+    path = '/home/pashockys/Scripts/Natasha/pyneng-examples-exercises/examples/08_python_basic_examples/sh_ip_int_br.txt'
+with open(path, 'r') as f:
+    alpha = [line.strip()  for line in f]
+result = {}
+for line in alpha[2:]:
+    if line.split()[1][0].isdigit():
+        print(line)
+        intf, ip, *_ = line.split()
+        result[intf] = ip
+print(result)
+
+#TASK: in given file you should find
+
+
