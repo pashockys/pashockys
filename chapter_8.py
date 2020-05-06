@@ -43,21 +43,21 @@ List comprehensions
 '''
 
 sizes_of_penis = [size for size in range(10)]
-print(sizes_of_penis)
+# print(sizes_of_penis)
 
 only_true_digits = [true_digit for list in table for true_digit in list if true_digit.isdigit()]
-print(only_true_digits)
+# print(only_true_digits)
 
 s = 'abc'
 t = (10, 20, 30)
-print(dict(zip(s, t)))
+# print(dict(zip(s, t)))
 '''
 Dict comprehensions
 '''
 # generate dict, where will be key as number and value as sqrt of its number
 
 test_dict = {value: value**2 for value in range(10)}
-print(test_dict)
+# print(test_dict)
 
 # now you need to replace all uppercase letters in keys to lowercase
 r1 = {'IOS': '15.4',
@@ -122,11 +122,46 @@ with open(path, 'r') as f:
 result = {}
 for line in alpha[2:]:
     if line.split()[1][0].isdigit():
-        print(line)
         intf, ip, *_ = line.split()
         result[intf] = ip
-print(result)
+# print(result)
 
-#TASK: in given file you should find
+#TASK: in given file you should find interface and MTU and create a dictionary
 
+try:
+    path = '/home/pashockys/progi_python/pyneng-examples-exercises/examples/08_python_basic_examples/sh_ip_interface.txt'
+    open(path, 'r')
+except FileNotFoundError:
+    print('It seems that you are not at home')
+    path = '/home/pashockys/Scripts/Natasha/pyneng-examples-exercises/examples/08_python_basic_examples/sh_ip_interface.txt'
+with open(path, 'r') as f:
+    result_task = {}
+    for line in f:
+        if 'line protocol' in line:
+            interface = line.split()[0]
+        if 'MTU' in line:
+            result_task[interface] = line.split()[2]
+# print(result_task)
+
+#TASK: in given file you should find interface and MTU and IP and create a dict
+
+try:
+    path = '/home/pashockys/progi_python/pyneng-examples-exercises/examples/08_python_basic_examples/sh_ip_interface.txt'
+    open(path, 'r')
+except FileNotFoundError:
+    print('It seems that you are not at home')
+    path = '/home/pashockys/Scripts/Natasha/pyneng-examples-exercises/examples/08_python_basic_examples/sh_ip_interface.txt'
+with open(path, 'r') as f:
+    result_task = {}
+    for line in f:
+        if 'line protocol' in line:
+            interface = line.split()[0]
+            result_task[interface] = {}
+        if 'Internet address' in line:
+            ip = line.split()[-1]
+            result_task[interface]['ip'] = ip
+        if 'MTU' in line:
+            mtu = line.split()[2]
+            result_task[interface]['MTU'] = mtu
+print(result_task)
 
