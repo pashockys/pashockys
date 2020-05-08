@@ -3,9 +3,13 @@
 def access_port_generate(dict, template):
     result = []
     for i in dict.keys():
-        result = template[0] + ' '+ str(dict[i])
-        template.insert(0, 'interface ' + i)
-        print(template)
+        result.append('interface ' + i)
+        for item in template:
+            if 'vlan' in item:
+                result.append(item + ' ' + str(dict[i]))
+            else:
+                result.append(item)
+    return result
 
 
 access_mode_template = [
@@ -19,4 +23,4 @@ access_config = {
     'FastEthernet0/16': 17
 }
 
-access_port_generate(access_config, access_mode_template)
+print(access_port_generate(access_config, access_mode_template))
