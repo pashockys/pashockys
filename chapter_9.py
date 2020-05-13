@@ -1,35 +1,41 @@
 #!/usr/bin/env python3
 '''
-Task 9.1
+Task 9.1a
 '''
 
-# def access_port_generate(dict, template):
-#     result = []
-#     for i in dict.keys():
-#         result.append('interface ' + i)
-#         for item in template:
-#             if 'vlan' in item:
-#                 result.append(item + ' ' + str(dict[i]))
-#             else:
-#                 result.append(item)
-#     return result
-#
-#
-# access_mode_template = [
-#     'switchport mode access', 'switchport access vlan',
-#     'switchport nonegotiate', 'spanning-tree portfast',
-#     'spanning-tree bpduguard enable'
-# ]
-# access_config = {
-#     'FastEthernet0/12': 10,
-#     'FastEthernet0/14': 11,
-#     'FastEthernet0/16': 17
-# }
-#
-# print(access_port_generate(access_config, access_mode_template))
+def access_port_generate(dict, template, *args):
+    result = []
+    for i in dict.keys():
+        result.append('interface ' + i)
+        for item in template:
+            if 'vlan' in item:
+                result.append(item + ' ' + str(dict[i]))
+            else:
+                result.append(item)
+        if args:
+            result.extend(*args)
+    return result
+
+
+access_mode_template = [
+    'switchport mode access', 'switchport access vlan',
+    'switchport nonegotiate', 'spanning-tree portfast',
+    'spanning-tree bpduguard enable'
+]
+access_config = {
+    'FastEthernet0/12': 10,
+    'FastEthernet0/14': 11,
+    'FastEthernet0/16': 17
+}
+port_security_template = [
+    'switchport port-security maximum 2',
+    'switchport port-security violation restrict',
+    'switchport port-security'
+]
+# print(access_port_generate(access_config, access_mode_template, port_security_template))
 
 '''
-Task 9.2
+Task 9.2a
 '''
 
 trunk_mode_template = [
@@ -44,23 +50,22 @@ trunk_config = {
 }
 
 def generate_trunk_config(intf_vlan_mapping, trunk_template):
-    result = []
+    result = {}
     for i in intf_vlan_mapping.keys():
-        result.append('interface ' + i)
+        interface = ('interface ' + i)
+        result[interface] = []
         for item in trunk_template:
             if 'allowed' in item:
                 items = ''
                 for value in intf_vlan_mapping[i]:
                     items = items + str(value) + ','
-                    print(items)
                 items = items[:-1]
-                result.append(item + ' ' + items)
+                result[interface].append(item + ' ' + items)
             else:
-                result.append(item)
+                result[interface].append(item)
     return result
 
-
-# print(generate_trunk_config(trunk_config, trunk_mode_template))
+print(generate_trunk_config(trunk_config, trunk_mode_template))
 
 '''
 Task 9.3
