@@ -65,10 +65,10 @@ def generate_trunk_config(intf_vlan_mapping, trunk_template):
                 result[interface].append(item)
     return result
 
-print(generate_trunk_config(trunk_config, trunk_mode_template))
+# print(generate_trunk_config(trunk_config, trunk_mode_template))
 
 '''
-Task 9.3
+Task 9.3a
 '''
 
 def get_int_vlan_map(config_filename):
@@ -81,22 +81,20 @@ def get_int_vlan_map(config_filename):
     with open(path, 'r') as f:
         result_dict = {}
         result_dict_trunk = {}
-        for line in f:
+        for index, line in enumerate(f):
             if 'interface' in line:
                 interface = line.strip().split()[1]
-                current_int = True
             if 'access vlan' in line:
-                if current_int:
-                    result_dict[interface] = int(line.strip().split()[-1])
-                current_int = False
+                result_dict[interface] = int(line.strip().split()[-1])
+                continue
+            if 'mode access' in line:
+                result_dict[interface] = 1
             if 'allowed vlan' in line:
-                if current_int:
-                    result_dict_trunk[interface] = [int(x) for x in line.strip().split()[-1].split(',')]
-                current_int = False
-    output = (result_dict_trunk, result_dict)
+                result_dict_trunk[interface] = [int(x) for x in line.strip().split()[-1].split(',')]
+    output = (result_dict, result_dict_trunk)
     return output
 
-# print(get_int_vlan_map('config_sw1.txt'))
+print(get_int_vlan_map('config_sw2.txt'))
 
 '''
 Task 9.4
