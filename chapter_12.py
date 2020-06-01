@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import ipaddress
 import subprocess
+from tabulate import tabulate
 
 
 def check_ip(ip):
@@ -43,6 +44,24 @@ def convert_ranges_to_ip_list(ip_list):
         output_list.append(item)
     return output_list
 
+def print_ip_table(accessible_ip, inaccessible_ip):
+    sum_list = []
+    header = ['Reachable', 'Unreachable']
+    for i in range(max(len(accessible_ip), len(inaccessible_ip))):
+        try:
+            accessible_ip[i]
+        except IndexError:
+            sum_list.append(['', inaccessible_ip[i]])
+            continue
+        try:
+            inaccessible_ip[i]
+        except IndexError:
+            sum_list.append([accessible_ip[i], ''])
+            continue
+        sum_list.append([accessible_ip[i], inaccessible_ip[i]])
+    print(tabulate(sum_list, headers=header))
+
+
 
 
 
@@ -58,6 +77,16 @@ Taks 12.1
 '''
 Taks 12.2
 '''
+# if __name__ == '__main__':
+#     list_of_ip = ['8.8.4.4', '1.1.1.1-3', '172.21.41.128-172.21.41.132']
+#     print(convert_ranges_to_ip_list(list_of_ip))
+'''
+Taks 12.3
+'''
 if __name__ == '__main__':
-    list_of_ip = ['8.8.4.4', '1.1.1.1-3', '172.21.41.128-172.21.41.132']
-    print(convert_ranges_to_ip_list(list_of_ip))
+    list_of_ip = ['8.8.4.4', '8.8.8.8', '1.1.1.1-3', '172.21.41.128-172.21.41.133']
+    # convert_ranges_to_ip_list(list_of_ip)
+
+    format_ip = ping_ip_addresses(convert_ranges_to_ip_list(list_of_ip))
+    print(type(format_ip[0]))
+    print_ip_table(format_ip[0], format_ip[1])
