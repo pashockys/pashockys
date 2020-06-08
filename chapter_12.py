@@ -62,11 +62,6 @@ def print_ip_table(accessible_ip, inaccessible_ip):
     print(tabulate(sum_list, headers=header))
 
 
-
-
-
-
-
 '''
 Taks 12.1
 '''
@@ -85,8 +80,5 @@ Taks 12.3
 '''
 if __name__ == '__main__':
     list_of_ip = ['8.8.4.4', '8.8.8.8', '1.1.1.1-3', '172.21.41.128-172.21.41.133']
-    # convert_ranges_to_ip_list(list_of_ip)
-
     format_ip = ping_ip_addresses(convert_ranges_to_ip_list(list_of_ip))
-    print(type(format_ip[0]))
     print_ip_table(format_ip[0], format_ip[1])
