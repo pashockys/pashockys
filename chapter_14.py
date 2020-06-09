@@ -79,11 +79,14 @@ vova_match_named_group = re.search('(?P<hui>\d+:\d+).* (?P<mac>\w+.\w+.\w+)?', l
 print(vova_match_named_group.groups(default = 'hui')) # set default parameter if we cannot find anything
 
 # trying to parse file
-device_regex = ('Device ID: (?P<device>\S+)')
-ip_regex = ('IP address: (?P<ip>\S+)')
-platform_regex = ('Platform: (?P<platform>\S+)')
-version_regex = (r'Version:\n(?P<version>.*)')
+# device_regex = ('Device ID: (?P<device>\S+)')
+# ip_regex = ('IP address: (?P<ip>\S+)')
+# (?P<platform>\S+ \S+)
+# version_regex = (r'Version:\n(?P<version>.*)')
 
+regex = (r'Device ID: (?P<device>\S+)|IP address: (?P<ip>\S+)|Platform: (?P<platform>\S+ [0-9a-zA-Z-]+)'
+         r'|Cisco IOS Software, (?P<version>.* Version [0-9a-zA-Z-().]+)')
+out_dict = {}
 if os.path.exists('/home/pashockys/progi_python/pyneng-examples-exercises/examples/15_module_re/sh_cdp_neighbors_sw1.txt'):
     path = ('/home/pashockys/progi_python/pyneng-examples-exercises/examples/15_module_re/sh_cdp_neighbors_sw1.txt')
 else:
@@ -91,11 +94,15 @@ else:
     print('It seems that you are not at home')
 with open(path, 'r')as f:
     for line in f:
-        out_dict = {}
-        if re.search(device_regex, line):
-            out_dict[]
+        match = re.search(regex, line)
+        if match:
+            if match.lastgroup == 'device':
+                device = match.group(match.lastgroup)
+                out_dict[device] = {}
+            else:
+                out_dict[device][match.lastgroup] = match.group(match.lastgroup)
+print(out_dict)
 
-        print(line.strip())
 
 
 
