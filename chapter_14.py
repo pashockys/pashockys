@@ -32,6 +32,7 @@ print(re.search('[^a-zA-Z]+', line).group())
 print(re.search('fast|0/0', line).group())
 # greedy off
 print(re.search('(\d+\.)+?', line).group())
+
 # regex groups
 log2 = 'Oct→ 7fd63 12:49:15.941: %SW_MATM-4-MACFLAP_NOTIF: Host f04d.a206.7fd6' \
        'in vlan 1 is flapping between port Gi0/5 and port Gi0/16'
@@ -39,18 +40,19 @@ vova_match = re.search('Host (\w{4}\.\w{4}\.\w{1,4})in vlan (\d+).*port (\S+) an
 print(f'simple print {vova_match.group(0)}')
 print(f'output with proper numbers{vova_match.group(1, 2)}')
 print(f'method groups{vova_match.groups()}')
+
 # named groups
 vova_match_named_group = re.search('Host (?P<mac>\w{4}\.\w{4}\.\w{1,4})in vlan (?P<vlan>\d+).*port (?P<int_1>\S+) '
                                    'and port (?P<int_2>\S+)', log2)
 print(f'named_search_group {vova_match_named_group.group("mac")}')
 print(f'method groupdict {vova_match_named_group.groupdict()}')
+
 # repeat of detected result
 bgp = '''
 R9# sh ip bgp | be Network Network Next Hop 192.168.66.0/24 192.168.79.7
 192.168.67.0/24 192.168.79.7 0 500 500 500 i 192.168.89.8 Metric LocPrf Weight Path 0 800 700 i 0
 192.168.89.8 192.168.88.0/24 0 700 700 700 i 0 800 700 i 192.168.79.7 0 700 700 700 i 192.168.89.8 0 0 800 800 i
 '''
-
 def how_many_repeated_sequences(str_to_search):
     previous_end = 0
     end = len(str_to_search)
@@ -142,3 +144,4 @@ print(match2)
 #re.sub
 match = re.sub('[\]\[/]', '-hui-', ospf_route)
 print(match)
+
