@@ -78,11 +78,7 @@ log3 = 'Oct→ 7fd63 12:49:15.941: %SW_MATM-4-MACFLAP_NOTIF:' # and cannot find 
 vova_match_named_group = re.search('(?P<hui>\d+:\d+).* (?P<mac>\w+.\w+.\w+)?', log3)
 print(vova_match_named_group.groups(default = 'hui')) # set default parameter if we cannot find anything
 
-# trying to parse file
-# device_regex = ('Device ID: (?P<device>\S+)')
-# ip_regex = ('IP address: (?P<ip>\S+)')
-# (?P<platform>\S+ \S+)
-# version_regex = (r'Version:\n(?P<version>.*)')
+#mini-task
 
 regex = (r'Device ID: (?P<device>\S+)|IP address: (?P<ip>\S+)|Platform: (?P<platform>\S+ [0-9a-zA-Z-]+)'
          r'|Cisco IOS Software, (?P<version>.* Version [0-9a-zA-Z-().]+)')
@@ -103,6 +99,46 @@ with open(path, 'r')as f:
                 out_dict[device][match.lastgroup] = match.group(match.lastgroup)
 print(out_dict)
 
+#find-iter
+sh_ip_int_br = '''
+...: R1#show ip interface brief
+...: Interface IP-Address OK? Method Status Protocol
+...: FastEthernet0/0 15.0.15.1 YES manual up up
+...: FastEthernet0/1 10.0.12.1 YES manual up up
+...: FastEthernet0/2 10.0.13.1 YES manual up up
+...: FastEthernet0/3 unassigned YES unset up up
+...: Loopback0 10.1.1.1 YES manual up up
+...: Loopback100 100.0.0.1 YES manual up up
+...: '''
+result = re.finditer(r'(\S+) +([\d.]+) +\w+ +\w+ +(up|down|administratively down) +(up|down)', sh_ip_int_br)
+for i in result:
+    print(i.group(1))
 
+#find-all
+# result = re.findall(r'(\S+) +([\d.]+) +\w+ +\w+ +(up|down|administratively down) +(up|down)', sh_ip_int_br)
+# result = re.findall(r'\w+\.\S+', sh_ip_int_br)
+result = re.findall(r'(\w+\.)\S+', sh_ip_int_br)
+print(result)
 
+#compile
+try_to_compile = re.compile(r'(\S+) +([\d.]+) +\w+ +\w+ +(up|down|administratively down) +(up|down)')
+match = try_to_compile.search(sh_ip_int_br)
+print(match.groups())
 
+#flags .DOTALL
+regex = (r'Device ID: (?P<device>\S+).*?IP address: (?P<ip>\S+).*?Platform: (?P<platform>\S+ [0-9a-zA-Z-]+)'
+         r'.*?Cisco IOS Software, (?P<version>.*? Version [0-9a-zA-Z-().]+)')
+with open(path, 'r')as f:
+        match = re.findall(regex, f.read(), re.DOTALL)
+        print(match)
+
+#re.split
+ospf_route = 'O 10.0.24.0/24 [110/41] via 10.0.13.3, 3d18h, FastEthernet0/0'
+match = re.split('/', ospf_route)
+print(match)
+match2 = re.split('[\]\[/]', ospf_route)
+print(match2)
+
+#re.sub
+match = re.sub('[\]\[/]', '-hui-', ospf_route)
+print(match)
