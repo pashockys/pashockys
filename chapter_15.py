@@ -74,6 +74,18 @@ def parse_sh_ip_int_br(filename):
     return out_list
 
 
+# task 15.2a
+def convert_to_dict(list_of_headers, list_of_data):
+    output_list = []
+    for data in list_of_data:
+        temp_dict = {}
+        for i, item in enumerate(list_of_headers):
+            temp_dict[item] = data[i]
+        output_list.append(temp_dict)
+    return output_list
+
+
+
 # task 15.3
 def convert_ios_nat_to_asa(ios_rules, asa_rules):
     if os.path.exists(
@@ -126,9 +138,12 @@ def generate_description_from_cdp(filename):
                                                          outside_interface=i.group('outside_interface')) for i in match}
     return out_dict
 
+headers = ['interface', 'address', 'status', 'protocol']
 # print(get_ip_from_cfg('config_r2.txt'))
-print(parse_sh_ip_int_br('sh_ip_int_br.txt'))
+# print(parse_sh_ip_int_br('sh_ip_int_br.txt'))
 # convert_ios_nat_to_asa('cisco_nat_config.txt', 'cisco_asa_config.txt')
 # print(get_ints_without_description('config_r1.txt'))
 # print(generate_description_from_cdp('sh_cdp_n_sw1.txt'))
+print(convert_to_dict(list_of_headers=headers, list_of_data=parse_sh_ip_int_br('sh_ip_int_br.txt')))
+
 
