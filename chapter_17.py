@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import csv
 import json
+import os
+import re
 #######################################
 # CSV
 #######################################
@@ -66,10 +68,42 @@ vasya = {
 # with open('test_json.json', 'r') as f:
 #     print(f.read())
 
-print('-----'*30)
+
 with open('test_json.json', 'w') as f:
     json.dump(vasya, f, sort_keys=True, indent=2)
 
 with open('test_json.json', 'r') as f:
     print(f.read())
 
+print('-----'*30)
+'''
+Task 17.1
+'''
+
+
+def parse_sh_version(zalupa):
+    regexp = re.findall(r'Cisco IOS Software, \d+ Software \S+, (?P<ios>Version \S+),'
+                        r'.* uptime is (?P<uptime>\d* (?:days,)? \d* (?:hours,)? \d* (?:minutes)?)'
+                        r'.* image file is (?P<image>\S+)', zalupa, re.DOTALL)
+    return regexp
+
+
+def write_inventory_to_csv(data_filenames, csv_filename):
+    fata = headers
+    for item in data_filenames:
+        if os.path.exists(
+                '/home/pashockys/progi_python/pyneng-examples-exercises/exercises_for_test/17_serialization/'+item):
+            path = ('/home/pashockys/progi_python/pyneng-examples-exercises//exercises_for_test/17_serialization/'+item)
+        else:
+            path = '/home/pashockys/Scripts/Natasha/pyneng-examples-exercises/exercises/17_serialization/'+item
+        with open(path, 'r')as f:
+            fata.append(parse_sh_version(f.read()))
+    print(fata)
+
+
+
+
+
+headers = ['hostname', 'ios', 'image', 'uptime']
+list_of_sh_version = ['sh_version_r1.txt', 'sh_version_r2.txt', 'sh_version_r3.txt']
+write_inventory_to_csv(list_of_sh_version, 'ffff.out')
