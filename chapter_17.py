@@ -82,28 +82,41 @@ Task 17.1
 
 
 def parse_sh_version(zalupa):
-    regexp = re.findall(r'Cisco IOS Software, \d+ Software \S+, (?P<ios>Version \S+),'
+    # regexp = re.findall(r'Cisco IOS Software, \d+ Software \S+, (?P<ios>Version \S+),'
+    #                     r'.* uptime is (?P<uptime>\d* (?:days,)? \d* (?:hours,)? \d* (?:minutes)?)'
+    #                     r'.* image file is (?P<image>\S+)', zalupa, re.DOTALL)
+    regexp = re.finditer(r'Cisco IOS Software, \d+ Software \S+, (?P<ios>Version \S+),'
                         r'.* uptime is (?P<uptime>\d* (?:days,)? \d* (?:hours,)? \d* (?:minutes)?)'
-                        r'.* image file is (?P<image>\S+)', zalupa, re.DOTALL)
+                        r'.* image file is "(?P<image>\S+)"', zalupa, re.DOTALL)
     return regexp
 
 
 def write_inventory_to_csv(data_filenames, csv_filename):
     fata = headers
-    for item in data_filenames:
+    for number, item in enumerate(data_filenames):
         if os.path.exists(
                 '/home/pashockys/progi_python/pyneng-examples-exercises/exercises_for_test/17_serialization/'+item):
             path = ('/home/pashockys/progi_python/pyneng-examples-exercises//exercises_for_test/17_serialization/'+item)
         else:
             path = '/home/pashockys/Scripts/Natasha/pyneng-examples-exercises/exercises/17_serialization/'+item
         with open(path, 'r')as f:
-            fata.append(parse_sh_version(f.read()))
+            hostname = re.findall('sh_version_(r\d*)', os.path.basename(item))
+            for reg in parse_sh_version(f.read()):
+                fata.append(hostname)
+                fata[number+1].extend(reg.groups())
+
     print(fata)
+    with open(csv_filename, 'w') as f:
+        writer = csv.writer(f, delimiter='^')
+        for i in fata:
+            writer.writerow(i)
+    with open(csv_filename, 'r') as f:
+        print(f.read())
 
 
 
 
 
-headers = ['hostname', 'ios', 'image', 'uptime']
+headers = [['hostname', 'ios', 'image', 'uptime']]
 list_of_sh_version = ['sh_version_r1.txt', 'sh_version_r2.txt', 'sh_version_r3.txt']
 write_inventory_to_csv(list_of_sh_version, 'ffff.out')
