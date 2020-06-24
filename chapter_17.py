@@ -81,7 +81,7 @@ print('-----'*30)
 Task 17.1
 '''
 def parse_sh_version(zalupa):
-    regexp = re.search(r'Cisco IOS Software, \d+ Software \S+, (?P<ios>Version \S+),'
+    regexp = re.search(r'Cisco IOS Software, \d+ Software \S+, Version (?P<ios>\S+),'
                         r'.* uptime is (?P<uptime>\d* (?:days,)? \d* (?:hours,)? \d* (?:minutes)?)'
                         r'.* image file is "(?P<image>\S+)"', zalupa, re.DOTALL)
     return (regexp.group('ios'), regexp.group('image'), regexp.group('uptime'))
@@ -109,12 +109,20 @@ def write_inventory_to_csv(data_filenames, csv_filename):
 
 headers = [['hostname', 'ios', 'image', 'uptime']]
 list_of_sh_version = ['sh_version_r1.txt', 'sh_version_r2.txt', 'sh_version_r3.txt']
-write_inventory_to_csv(list_of_sh_version, 'ffff.out')
+# write_inventory_to_csv(list_of_sh_version, 'ffff.out')
 '''
 Task 17.2
 '''
 def parse_sh_cdp_neighbors(pum):
-    out = re.finditer('\n(\S+) *(\S+ \S+) *\S+', pum)
+    out_dict = {}
+    host = re.search(r'(\S+)>', pum).group(1)
+    pum = pum[pum.find('Port ID')::]
+    out = re.finditer(r'\n(?P<device>\S+) *(?P<local_int>\S+ \S+) *\S+ * \S? ?\S? ?\S? *\S+ * (?P<port_id>\S+ \S+)', pum)
+    out_dict[host] = {}
+    for match in out:
+        out_dict[host][match.group('local_int')] = {}
+        out_dict[host][match.group('local_int')][match.group('device')] = match.group('port_id')
+    return out_dict
 
 
 if os.path.exists(
@@ -122,7 +130,5 @@ if os.path.exists(
     path = ('/home/pashockys/progi_python/pyneng-examples-exercises//exercises_for_test/17_serialization/sh_cdp_n_sw1.txt')
 else:
     path = '/home/pashockys/Scripts/Natasha/pyneng-examples-exercises/exercises/17_serialization/sh_cdp_n_sw1.txt'
-    with open(path, 'r') as f:
-        parse_sh_cdp_neighbors(f.read())
-
-'R5           Fa 0/1          122           R S I           2811       Fa 0/1'
+with open(path, 'r') as f:
+    print(parse_sh_cdp_neighbors(f.read()))
