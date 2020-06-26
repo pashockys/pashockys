@@ -3,6 +3,8 @@ import csv
 import json
 import os
 import re
+import yaml
+
 #######################################
 # CSV
 #######################################
@@ -76,7 +78,7 @@ import re
 # with open('test_json.json', 'r') as f:
 #     print(f.read())
 
-print('-----'*30)
+
 '''
 Task 17.1
 '''
@@ -110,9 +112,13 @@ def write_inventory_to_csv(data_filenames, csv_filename):
 headers = [['hostname', 'ios', 'image', 'uptime']]
 list_of_sh_version = ['sh_version_r1.txt', 'sh_version_r2.txt', 'sh_version_r3.txt']
 # write_inventory_to_csv(list_of_sh_version, 'ffff.out')
+
+
 '''
-Task 17.2
+Task 17.2a
 '''
+
+
 def parse_sh_cdp_neighbors(pum):
     out_dict = {}
     host = re.search(r'(\S+)>', pum).group(1)
@@ -125,10 +131,29 @@ def parse_sh_cdp_neighbors(pum):
     return out_dict
 
 
-if os.path.exists(
-        '/home/pashockys/progi_python/pyneng-examples-exercises/exercises_for_test/17_serialization/sh_cdp_n_sw1.txt'):
-    path = ('/home/pashockys/progi_python/pyneng-examples-exercises//exercises_for_test/17_serialization/sh_cdp_n_sw1.txt')
-else:
-    path = '/home/pashockys/Scripts/Natasha/pyneng-examples-exercises/exercises/17_serialization/sh_cdp_n_sw1.txt'
-with open(path, 'r') as f:
-    print(parse_sh_cdp_neighbors(f.read()))
+def generate_topology_from_cdp(list_of_files, save_to_filename=None):
+    out_dict ={}
+    for item in list_of_files:
+        if os.path.exists(
+                '/home/pashockys/progi_python/pyneng-examples-exercises/exercises_for_test/17_serialization/'+item):
+            path = '/home/pashockys/progi_python/pyneng-examples-exercises/exercises_for_test/17_serialization/'+item
+        else:
+            path = '/home/pashockys/Scripts/Natasha/pyneng-examples-exercises/exercises/17_serialization/'+item
+        with open(path, 'r') as f:
+            out_dict.update(parse_sh_cdp_neighbors(f.read()))
+            print('-----' * 30)
+    if save_to_filename:
+        with open(save_to_filename, 'w') as f:
+            yaml.dump(out_dict, f)
+    return out_dict
+
+list_of_cdps = [
+'sh_cdp_n_sw1.txt',
+'sh_cdp_n_r1.txt',
+'sh_cdp_n_r2.txt',
+'sh_cdp_n_r3.txt',
+'sh_cdp_n_r4.txt',
+'sh_cdp_n_r5.txt',
+'sh_cdp_n_r6.txt']
+
+print(generate_topology_from_cdp(list_of_cdps, 'zalupa'))
