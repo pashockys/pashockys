@@ -4,6 +4,7 @@ import json
 import os
 import re
 import yaml
+import draw_topology from draw_network_graph.py
 
 #######################################
 # CSV
@@ -115,7 +116,7 @@ list_of_sh_version = ['sh_version_r1.txt', 'sh_version_r2.txt', 'sh_version_r3.t
 
 
 '''
-Task 17.2a
+Task 17.2ab
 '''
 
 
@@ -141,11 +142,33 @@ def generate_topology_from_cdp(list_of_files, save_to_filename=None):
             path = '/home/pashockys/Scripts/Natasha/pyneng-examples-exercises/exercises/17_serialization/'+item
         with open(path, 'r') as f:
             out_dict.update(parse_sh_cdp_neighbors(f.read()))
-            print('-----' * 30)
     if save_to_filename:
         with open(save_to_filename, 'w') as f:
             yaml.dump(out_dict, f)
     return out_dict
+
+def transform_topology(filename):
+    with open(filename, 'r') as f:
+        temp_file = yaml.safe_load(f)
+    # print(temp_file)
+    new_dict = {}
+    out_dict = {}
+    for keys_out in temp_file.keys():
+        for keys_in in temp_file[keys_out].keys():
+            for keys, item in temp_file[keys_out][keys_in].items():
+                new_dict[(keys_out, keys_in)] = (keys, item)
+    # print('-----' * 30)
+    for key in new_dict.keys():
+        for item in new_dict.values():
+            if key == item:
+                if new_dict.get(new_dict[key]) == item:
+                    continue
+        out_dict[key] = item
+
+    print(new_dict)
+    print('-----' * 30)
+    print(out_dict)
+
 
 list_of_cdps = [
 'sh_cdp_n_sw1.txt',
@@ -156,4 +179,6 @@ list_of_cdps = [
 'sh_cdp_n_r5.txt',
 'sh_cdp_n_r6.txt']
 
-print(generate_topology_from_cdp(list_of_cdps, 'zalupa'))
+# print(generate_topology_from_cdp(list_of_cdps, 'zalupa'))
+# print('-----' * 30)
+transform_topology('zalupa')
