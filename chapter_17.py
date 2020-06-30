@@ -4,7 +4,7 @@ import json
 import os
 import re
 import yaml
-import draw_topology from draw_network_graph.py
+from draw_network_graph import draw_topology
 
 #######################################
 # CSV
@@ -147,27 +147,31 @@ def generate_topology_from_cdp(list_of_files, save_to_filename=None):
             yaml.dump(out_dict, f)
     return out_dict
 
+
 def transform_topology(filename):
     with open(filename, 'r') as f:
         temp_file = yaml.safe_load(f)
-    # print(temp_file)
     new_dict = {}
-    out_dict = {}
+    repeated_dict = {}
     for keys_out in temp_file.keys():
         for keys_in in temp_file[keys_out].keys():
             for keys, item in temp_file[keys_out][keys_in].items():
                 new_dict[(keys_out, keys_in)] = (keys, item)
-    # print('-----' * 30)
-    for key in new_dict.keys():
-        for item in new_dict.values():
-            if key == item:
-                if new_dict.get(new_dict[key]) == item:
+    for key, value in new_dict.items():
+        for key2, value2 in new_dict.items():
+            if key == value2 and value == key2:
+                print(repeated_dict)
+                print(key, value, key2, value2)
+                print(key2, repeated_dict.get(value2))
+                print('-')
+                if key2 == repeated_dict.get(value2):
+                    print('1')
                     continue
-        out_dict[key] = item
-
-    print(new_dict)
+                else:
+                    repeated_dict[key2] = value2
+    draw_topology(repeated_dict, 'hhhhhhh')
+    print(repeated_dict)
     print('-----' * 30)
-    print(out_dict)
 
 
 list_of_cdps = [
@@ -180,5 +184,4 @@ list_of_cdps = [
 'sh_cdp_n_r6.txt']
 
 # print(generate_topology_from_cdp(list_of_cdps, 'zalupa'))
-# print('-----' * 30)
 transform_topology('zalupa')
