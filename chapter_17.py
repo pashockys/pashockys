@@ -160,19 +160,12 @@ def transform_topology(filename):
     for key, value in new_dict.items():
         for key2, value2 in new_dict.items():
             if key == value2 and value == key2:
-                print(repeated_dict)
-                print(key, value, key2, value2)
-                print(key2, repeated_dict.get(value2))
-                print('-')
                 if key2 == repeated_dict.get(value2):
-                    print('1')
                     continue
                 else:
                     repeated_dict[key2] = value2
     draw_topology(repeated_dict, 'hhhhhhh')
-    print(repeated_dict)
-    print('-----' * 30)
-
+    return repeated_dict
 
 list_of_cdps = [
 'sh_cdp_n_sw1.txt',
