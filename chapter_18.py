@@ -95,14 +95,20 @@ import re
 '''
 example
 '''
+if os.path.exists('/home/pashockys/progi_python/pyneng-examples-exercises/examples/18_db/'):
+    dhcp_snoop = '/home/pashockys/progi_python/pyneng-examples-exercises/examples/18_db/dhcp_snooping.txt'
+    dhcp_schema = '/home/pashockys/progi_python/pyneng-examples-exercises/examples/18_db/dhcp_snooping_schema.sql'
+else:
+    dhcp_snoop = '/home/pashockys/Scripts/Natasha/pyneng-examples-exercises/examples/18_db/dhcp_snooping.txt'
+    dhcp_schema = '/home/pashockys/Scripts/Natasha/pyneng-examples-exercises/examples/18_db/dhcp_snooping_schema.sql'
 
-dhcp_snoop = '/home/pashockys/progi_python/pyneng-examples-exercises/examples/18_db/dhcp_snooping.txt'
+# dhcp_snoop = '/home/pashockys/progi_python/pyneng-examples-exercises/examples/18_db/dhcp_snooping.txt'
 with open(dhcp_snoop, 'r') as f:
     match = re.findall(r'(\S+) *(\S+) *\d+ *\S+ *(\S+) *(\S+)', f.read())
 if not os.path.exists('test.db'):
     con = sqlite3.connect('test.db')
     print('creating schema')
-    with open('/home/pashockys/progi_python/pyneng-examples-exercises/examples/18_db/dhcp_snooping_schema.sql', 'r') as f:
+    with open(dhcp_schema, 'r') as f:
         con.executescript(f.read())
     print('database was successfully created')
 else:
