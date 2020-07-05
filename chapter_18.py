@@ -95,28 +95,48 @@ import re
 '''
 example
 '''
-if os.path.exists('/home/pashockys/progi_python/pyneng-examples-exercises/examples/18_db/'):
-    dhcp_snoop = '/home/pashockys/progi_python/pyneng-examples-exercises/examples/18_db/dhcp_snooping.txt'
-    dhcp_schema = '/home/pashockys/progi_python/pyneng-examples-exercises/examples/18_db/dhcp_snooping_schema.sql'
-else:
-    dhcp_snoop = '/home/pashockys/Scripts/Natasha/pyneng-examples-exercises/examples/18_db/dhcp_snooping.txt'
-    dhcp_schema = '/home/pashockys/Scripts/Natasha/pyneng-examples-exercises/examples/18_db/dhcp_snooping_schema.sql'
 
-# dhcp_snoop = '/home/pashockys/progi_python/pyneng-examples-exercises/examples/18_db/dhcp_snooping.txt'
-with open(dhcp_snoop, 'r') as f:
-    match = re.findall(r'(\S+) *(\S+) *\d+ *\S+ *(\S+) *(\S+)', f.read())
-if not os.path.exists('test.db'):
-    con = sqlite3.connect('test.db')
-    print('creating schema')
+# if os.path.exists('/home/pashockys/progi_python/pyneng-examples-exercises/examples/18_db/'):
+#     dhcp_snoop = '/home/pashockys/progi_python/pyneng-examples-exercises/examples/18_db/dhcp_snooping.txt'
+#     dhcp_schema = '/home/pashockys/progi_python/pyneng-examples-exercises/examples/18_db/dhcp_snooping_schema.sql'
+# else:
+#     dhcp_snoop = '/home/pashockys/Scripts/Natasha/pyneng-examples-exercises/examples/18_db/dhcp_snooping.txt'
+#     dhcp_schema = '/home/pashockys/Scripts/Natasha/pyneng-examples-exercises/examples/18_db/dhcp_snooping_schema.sql'
+# with open(dhcp_snoop, 'r') as f:
+#     match = re.findall(r'(\S+) *(\S+) *\d+ *\S+ *(\S+) *(\S+)', f.read())
+# if not os.path.exists('test.db'):
+#     con = sqlite3.connect('test.db')
+#     print('creating schema')
+#     with open(dhcp_schema, 'r') as f:
+#         con.executescript(f.read())
+#     print('database was successfully created')
+# else:
+#     print('database already exists')
+# try:
+#     print('trying to fill database with some data')
+#     con.executemany('insert into dhcp values (?, ?, ?, ?)', match)
+# except sqlite3.IntegrityError as a:
+#     print(f'why are you doing this\nerror: {a}')
+# con.commit()
+# con.close()
+
+'''
+task 18.3(creating_database)
+'''
+
+if os.path.exists('/home/pashockys/progi_python/pyneng-examples-exercises/exercises/18_db/task_18_3/'):
+    path = '/home/pashockys/progi_python/pyneng-examples-exercises/exercises/18_db/task_18_3/'
+    dhcp_schema = path+'dhcp_snooping_schema.sql'
+    dhcp_snoop = path+'dhcp_snooping.txt'
+else:
+    dhcp_schema = '/home/pashockys/Scripts/Natasha/pyneng-examples-exercises/exercises/18_db/task_18_3/dhcp_snooping_schema.sql'
+    dhcp_snoop = '/home/pashockys/Scripts/Natasha/pyneng-examples-exercises/exercises/18_db/task_18_3/dhcp_snooping.txt'
+if os.path.exists('dhcp_snooping.db'):
+    print('database already exists')
+else:
+    print('creating database................')
+    con = sqlite3.connect('dhcp_snooping.db')
     with open(dhcp_schema, 'r') as f:
         con.executescript(f.read())
-    print('database was successfully created')
-else:
-    print('database already exists')
-try:
-    print('trying to fill database with some data')
-    con.executemany('insert into dhcp values (?, ?, ?, ?)', match)
-except sqlite3.IntegrityError as a:
-    print(f'why are you doing this\nerror: {a}')
-con.commit()
-con.close()
+    con.commit()
+    con.close()
