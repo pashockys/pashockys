@@ -124,13 +124,13 @@ example
 task 18.3(creating_database)
 '''
 
-if os.path.exists('/home/pashockys/progi_python/pyneng-examples-exercises/exercises/18_db/task_18_3/'):
-    path = '/home/pashockys/progi_python/pyneng-examples-exercises/exercises/18_db/task_18_3/'
-    dhcp_schema = path+'dhcp_snooping_schema.sql'
-    dhcp_snoop = path+'dhcp_snooping.txt'
+if os.path.exists('/home/pashockys/progi_python/pyneng-examples-exercises/exercises/18_db/task_18_5/'):
+    path = '/home/pashockys/progi_python/pyneng-examples-exercises/exercises/18_db/task_18_5/'
 else:
-    dhcp_schema = '/home/pashockys/Scripts/Natasha/pyneng-examples-exercises/exercises/18_db/task_18_3/dhcp_snooping_schema.sql'
-    dhcp_snoop = '/home/pashockys/Scripts/Natasha/pyneng-examples-exercises/exercises/18_db/task_18_3/dhcp_snooping.txt'
+    path = '/home/pashockys/Scripts/Natasha/pyneng-examples-exercises/exercises/18_db/task_18_5/'
+dhcp_schema = path+'dhcp_snooping_schema.sql'
+dhcp_snoop = path+'dhcp_snooping.txt'
+
 if os.path.exists('dhcp_snooping.db'):
     print('database already exists')
 else:

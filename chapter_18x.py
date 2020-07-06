@@ -4,6 +4,7 @@ import sys
 import os
 import yaml
 import re
+from datetime import timedelta, datetime
 
 # key, value = sys.argv[1:]
 # query = f'select * from dhcp where {key} = ?'
@@ -54,15 +55,14 @@ import re
 task 18.3(add_data)
 '''
 
-if os.path.exists('/home/pashockys/progi_python/pyneng-examples-exercises/exercises/18_db/task_18_3/'):
-    path = '/home/pashockys/progi_python/pyneng-examples-exercises/exercises/18_db/task_18_3/'
-    new_path = '/home/pashockys/progi_python/pyneng-examples-exercises/exercises/18_db/task_18_3/new_data/'
+if os.path.exists('/home/pashockys/progi_python/pyneng-examples-exercises/exercises/18_db/task_18_5/'):
+    path = '/home/pashockys/progi_python/pyneng-examples-exercises/exercises/18_db/task_18_5/'
+    new_path = '/home/pashockys/progi_python/pyneng-examples-exercises/exercises/18_db/task_18_5/new_data/'
 else:
-    path = '/home/pashockys/Scripts/Natasha/pyneng-examples-exercises/exercises/18_db/task_18_3/'
-    new_path = '/home/pashockys/Scripts/Natasha/pyneng-examples-exercises/exercises/18_db/task_18_3/new_data/'
+    path = '/home/pashockys/Scripts/Natasha/pyneng-examples-exercises/exercises/18_db/task_18_5/'
+    new_path = '/home/pashockys/Scripts/Natasha/pyneng-examples-exercises/exercises/18_db/task_18_5/new_data/'
 query_sw = 'insert into switches values (?, ?)'
-query_dhcp = 'replace into dhcp values (?, ?, ?, ?, ?, 1)'
-# query_dhcp = 'insert into dhcp values (?, ?, ?, ?, ?, 1)'
+query_dhcp = 'replace into dhcp values (?, ?, ?, ?, ?, 1, datetime("now"))'
 con = sqlite3.connect('dhcp_snooping.db')
 
 
@@ -83,7 +83,6 @@ def get_data_from_files(path):
                         out = match.groups()+(switch_name.group(1), )
                         data_dhcp.append(out)
         if 'switches.yml' in name_of_file:
-            print('asdasd')
             with open(path+name_of_file, 'r') as f:
                 data_switches = yaml.safe_load(f)
             data_sw = []
@@ -104,8 +103,19 @@ def writing_to_table(table_name, data, query):
     con.commit()
 
 
-data = get_data_from_files(new_path)
-writing_to_table(table_name='dhcp', data=data[0], query=query_dhcp)
-writing_to_table(table_name='switches', data=data[1], query=query_sw)
-con.close()
+def delete_old_data(table_name):
+    now = datetime.today().replace(microsecond=0)
+    week_ago = now - timedelta(days=7)
+    con.execute(f"delete from {table_name} where last_active < '{week_ago}'")
+    con.commit()
+
+
+# data = get_data_from_files(path)
+# writing_to_table(table_name='dhcp', data=data[0], query=query_dhcp)
+# writing_to_table(table_name='switches', data=data[1], query=query_sw)
+delete_old_data(table_name='dhcp')
+# con.close()
+
+
+
 
