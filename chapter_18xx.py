@@ -45,11 +45,11 @@ def printing_values(data):
     print('active connections:')
     print('{:19} {:15} {:6} {:18} {:6} {:3}'.format('mac', 'ip', 'vlan', 'int', 'switch', 'active'))
     for i in data[0]:
-        print('{:19} {:15} {:6} {:18} {:6} {:3}'.format(i[0], i[1], i[2], i[3], i[4], i[5]))
+        print('{:19} {:15} {:6} {:18} {:6} {:3}'.format(*i))
     print('non-active connections:')
     print('{:19} {:15} {:6} {:18} {:6} {:3}'.format('mac', 'ip', 'vlan', 'int', 'switch', 'active'))
     for i in data[1]:
-        print('{:19} {:15} {:6} {:18} {:6} {:3}'.format(i[0], i[1], i[2], i[3], i[4], i[5]))
+        print('{:19} {:15} {:6} {:18} {:6} {:3}'.format(*i))
 
 
 
