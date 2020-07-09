@@ -34,9 +34,9 @@ def send_show_command(device, command):
 # user = input('Username: ')
 # password = getpass.getpass(prompt='ssh password: ')
 # enable_pass = getpass.getpass(prompt='Enter enable password: ')
-
+#
 # device_ip = '192.168.122.2'
-# device_ip = '192.168.1.5'
+# # device_ip = '192.168.1.5'
 #
 # device_params = {
 #     'device_type': 'cisco_ios',
@@ -44,7 +44,7 @@ def send_show_command(device, command):
 #     'username': user,
 #     'password': password,
 #     'secret': enable_pass}
-
+#
 # print(send_show_command(device_params, command))
 
 '''
@@ -59,7 +59,7 @@ Task 19.2a
 #         result = ssh.send_config_set(config_commands)
 #     return result
 '''
-Task 19.2b
+Task 19.2bc
 '''
 def send_config_commands(device, config_commands, verbose=True):
     if verbose:
@@ -68,16 +68,37 @@ def send_config_commands(device, config_commands, verbose=True):
         print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
     out_good = {}
     out_bad = {}
-    with ConnectHandler(**device) as ssh:
-        for com in config_commands:
-            result = ssh.send_config_set(com)
-            if 'Unknown command' in result:
-                out_bad[com] = 'Команда "{}" выполнилась с ошибкой "Unknown command" на устройстве {}'.format(com, device['ip'])
-            elif 'Illegal command line' in result:
-                out_bad[com] = 'Команда "{}" выполнилась с ошибкой "Illegal command line" на устройстве {}'.format(com, device["ip"])
-            else:
-                out_good[com] = result
-                print(result)
+    if router_vendor == 'eltex':
+        with ConnectHandler(**device) as ssh:
+            for com in config_commands:
+                result = ssh.send_config_set(com)
+                if 'Unknown command' in result:
+                    out_bad[com] = 'Команда "{}" выполнилась с ошибкой "Unknown command" на устройстве {}'.format(com, device['ip'])
+                    while True:
+                        q = input('do you want to continue?')
+                        if q == 'No' or 'N':
+                            break
+                        if q == 'Yes' or 'Y':
+                            break
+                        print('you can type only Y or N')
+                    if q == 'Yes' or "Y":
+                        break
+                elif 'Illegal command line' in result:
+                    out_bad[com] = 'Команда "{}" выполнилась с ошибкой "Illegal command line" на устройстве {}'.format(com, device["ip"])
+                else:
+                    out_good[com] = result
+    if router_vendor == 'cisco':
+        with ConnectHandler(**device) as ssh:
+            for com in config_commands:
+                result = ssh.send_config_set(com)
+                if 'Invalid input detected' in result:
+                    out_bad[com] = 'Команда "{}" выполнилась с ошибкой "Invalid input detected" на устройстве {}'.format(com, device['ip'])
+                elif 'Incomplete command' in result:
+                    out_bad[com] = 'Команда "{}" выполнилась с ошибкой "Incomplete command" на устройстве {}'.format(com, device["ip"])
+                elif 'Ambiguous command' in result:
+                    out_bad[com] = 'Команда "{}" выполнилась с ошибкой "Ambiguous command" на устройстве {}'.format(com, device["ip"])
+                else:
+                    out_good[com] = result
     return (out_good, out_bad)
 
 while True:
@@ -110,9 +131,9 @@ def send_commands(device, show=None, config=None):
         result = send_config_commands(device, config)
     return result
 
-commands = ['do sh run int', 'do sh date', 'do sh syslog']
-with open(path + 'my_devices.yaml') as f:
-    list_of_conf_dict = yaml.safe_load(f)
+# commands = ['do sh run int', 'do sh date', 'do sh syslog']
+# with open(path + 'my_devices.yaml') as f:
+#     list_of_conf_dict = yaml.safe_load(f)
 # for i in list_of_conf_dict:
     # # print(send_commands(i, show='sh run interfaces'))
     # print(send_commands(i, config=commands))
