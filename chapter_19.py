@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 import getpass
 import sys
 from netmiko import ConnectHandler
@@ -73,32 +74,35 @@ def send_config_commands(device, config_commands, verbose=True):
             for com in config_commands:
                 result = ssh.send_config_set(com)
                 if 'Unknown command' in result:
-                    out_bad[com] = 'Команда "{}" выполнилась с ошибкой "Unknown command" на устройстве {}'.format(com, device['ip'])
+                    out_bad[com] = result
+                    print('command "{}" executed with error "Unknown command" on device {}'.format(com, device['ip']))
                     while True:
-                        q = input('do you want to continue?')
-                        if q == 'No' or 'N':
+                        q = input('do you want to continue?\n')
+                        if q.lower().strip() in ['n', 'no']:
                             break
-                        if q == 'Yes' or 'Y':
+                        if q.lower().strip() in ['y', 'ye', 'yes']:
                             break
-                        print('you can type only Y or N')
-                    if q == 'Yes' or "Y":
-                        break
+                        else:
+                            print('you can type only Y or N')
+                if q.lower().strip() in ['n', 'no']:
+                    break
                 elif 'Illegal command line' in result:
-                    out_bad[com] = 'Команда "{}" выполнилась с ошибкой "Illegal command line" на устройстве {}'.format(com, device["ip"])
+                    out_bad[com] = result
+                    print('command "{}" executed with error "Illegal command line" on device {}'.format(com, device["ip"]))
                 else:
                     out_good[com] = result
-    if router_vendor == 'cisco':
-        with ConnectHandler(**device) as ssh:
-            for com in config_commands:
-                result = ssh.send_config_set(com)
-                if 'Invalid input detected' in result:
-                    out_bad[com] = 'Команда "{}" выполнилась с ошибкой "Invalid input detected" на устройстве {}'.format(com, device['ip'])
-                elif 'Incomplete command' in result:
-                    out_bad[com] = 'Команда "{}" выполнилась с ошибкой "Incomplete command" на устройстве {}'.format(com, device["ip"])
-                elif 'Ambiguous command' in result:
-                    out_bad[com] = 'Команда "{}" выполнилась с ошибкой "Ambiguous command" на устройстве {}'.format(com, device["ip"])
-                else:
-                    out_good[com] = result
+    # if router_vendor == 'cisco':
+    #     with ConnectHandler(**device) as ssh:
+    #         for com in config_commands:
+    #             result = ssh.send_config_set(com)
+    #             if 'Invalid input detected' in result:
+    #                 out_bad[com] = 'Команда "{}" выполнилась с ошибкой "Invalid input detected" на устройстве {}'.format(com, device['ip'])
+    #             elif 'Incomplete command' in result:
+    #                 out_bad[com] = 'Команда "{}" выполнилась с ошибкой "Incomplete command" на устройстве {}'.format(com, device["ip"])
+    #             elif 'Ambiguous command' in result:
+    #                 out_bad[com] = 'Команда "{}" выполнилась с ошибкой "Ambiguous command" на устройстве {}'.format(com, device["ip"])
+    #             else:
+    #                 out_good[com] = str(result)
     return (out_good, out_bad)
 
 while True:
@@ -116,8 +120,15 @@ while True:
         break
     else:
         print('try again')
+
 for i in list_of_conf_dict:
-    print(send_config_commands(i, commands))
+    output = (send_config_commands(i, commands))
+    for dicts in output:
+        # print(dicts)
+        for key, value in dicts.items():
+            print(key, value)
+    # send_config_commands(i, commands)
+
 
 
 '''
