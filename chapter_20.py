@@ -4,7 +4,7 @@ import logging
 import netmiko
 import yaml
 import os
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from itertools import repeat
 
 if os.path.exists('/home/pashockys/progi_python/pyneng-examples-exercises/exercises/20_concurrent_connections/'):
@@ -50,10 +50,20 @@ def execute_command(devices, command):
         for res, dev in zip(result, devices):
             output[dev['ip']] = res
     return output
-
+'''
+submit 
+'''
+def submit_execute_command(devices, command):
+    with ThreadPoolExecutor(max_workers=3) as executor:
+        future_list = [executor.submit(send_show, device, command) for device in devices]
+        output = {dev['ip']:i.result() for dev, i in zip(devices, as_completed(future_list))}
+    return output
 
 if __name__ == "__main__":
     with open(path+'my_devices.yaml') as f:
         devices = yaml.safe_load(f)
-    for items, values in execute_command(devices, 'sh date').items():
-        print(items, values)
+    # print(execute_command(devices, 'sh clock'))
+    print(submit_execute_command(devices, 'sh clock'))
+
+
+
