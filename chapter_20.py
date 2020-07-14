@@ -133,23 +133,41 @@ Task 20.2
 '''
 Task 20.3
 '''
-commands = {'192.168.100.2': 'sh ip int br',
-            '192.168.100.3': 'sh arp',
-            '192.168.100.4': 'sh ip int br',
-            '192.168.100.5': 'sh arp'}
-def execute_command_by_ssh():
+ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
+commands = {'192.168.122.2': 'sh ip int br',
+            '192.168.122.3': 'sh arp',
+            '192.168.122.4': 'sh ip int br',
+            '192.168.122.5': 'sh arp'}
+
+def execute_command_by_ssh(device_dict, command):
+    try:
+        with netmiko.ConnectHandler(**device_dict) as ssh:
+            ssh.enable()
+            result = ssh.find_prompt() + '\n' + ansi_escape.sub('', ssh.send_command(command) + '\n')
+            return result
+    except netmiko.ssh_exception.NetmikoAuthenticationException:
+        print(f'wrong password at {device_dict["ip"]}')
+    except netmiko.ssh_exception.NetmikoTimeoutException:
+        print(f'no connection to {device_dict["ip"]} (timeout)')
+
 
 def send_command_to_devices(devices, commands_dict, filename, limit=3):
-    with ThreadPoolExecutor(max_workers=limit) as executor:
-        result = executor.submit(execute_command_by_ssh, )
-
+    with open(path+filename, 'w')as f:
+        with ThreadPoolExecutor(max_workers=limit) as executor:
+            future_result = [executor.submit(execute_command_by_ssh, device, commands_dict[device["ip"]]) for device in devices]
+        for res in as_completed(future_result):
+            try:
+                # print(res.result())
+                f.write(res.result())
+            except TypeError:
+                f.write('pfffff\n')
 
 
 if __name__ == "__main__":
     with open(path+'my_devices.yaml', 'r') as f:
         from_file = yaml.safe_load(f)
 
-send_command_to_devices(from_file, commands)
+send_command_to_devices(from_file, commands, 'zalupa3', 2)
 
 
 
