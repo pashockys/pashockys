@@ -133,47 +133,90 @@ Task 20.2
 '''
 Task 20.3
 '''
-ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
-commands = {'192.168.122.2': 'sh ip int br',
-            '192.168.122.3': 'sh arp',
-            '192.168.122.4': 'sh ip int br',
-            '192.168.122.5': 'sh arp'}
+# ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
+# commands = {'192.168.1.2': 'sh ip int',
+#             '192.168.1.3': 'sh arp',
+#             '192.168.1.4': 'sh ip int',
+#             '192.168.1.5': 'sh arp'}
+# # commands = {'192.168.1.2': 'sh ip int br',
+# #             '192.168.1.3': 'sh arp',
+# #             '192.168.1.4': 'sh ip int br',
+# #             '192.168.1.5': 'sh arp'}
+#
+# def execute_command_by_ssh(device_dict, command):
+#     try:
+#         with netmiko.ConnectHandler(**device_dict) as ssh:
+#             ssh.enable()
+#             # result = ssh.find_prompt() + '\n' + ansi_escape.sub('', ssh.send_command(command) + '\n')
+#             result = ssh.find_prompt() + ansi_escape.sub('', ssh.send_command(command) + '\n')
+#             return result
+#     except netmiko.ssh_exception.NetmikoAuthenticationException:
+#         print(f'wrong password at {device_dict["ip"]}')
+#     except netmiko.ssh_exception.NetmikoTimeoutException:
+#         print(f'no connection to {device_dict["ip"]} (timeout)')
+#
+#
+# def send_command_to_devices(devices, commands_dict, filename, limit=3):
+#     with open(path+filename, 'w')as f:
+#         with ThreadPoolExecutor(max_workers=limit) as executor:
+#             future_result = [executor.submit(execute_command_by_ssh, device, commands_dict[device["ip"]]) for device in devices]
+#         for res in as_completed(future_result):
+#             try:
+#                 f.write(res.result())
+#             except TypeError:
+#                 f.write('pfffff\n')
+#
+#
+# if __name__ == "__main__":
+#     with open(path+'my_devices.yaml', 'r') as f:
+#         from_file = yaml.safe_load(f)
+#
+# send_command_to_devices(from_file, commands, 'zalupa3', 2)
 
-def execute_command_by_ssh(device_dict, command):
+'''
+Task 20.4
+'''
+ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
+def execute_show_command(devices_dict, command):
     try:
-        with netmiko.ConnectHandler(**device_dict) as ssh:
+        with netmiko.ConnectHandler(**devices_dict) as ssh:
             ssh.enable()
-            result = ssh.find_prompt() + '\n' + ansi_escape.sub('', ssh.send_command(command) + '\n')
+            result = ssh.find_prompt() + ansi_escape.sub('', ssh.send_command(command) + '\n')
             return result
     except netmiko.ssh_exception.NetmikoAuthenticationException:
-        print(f'wrong password at {device_dict["ip"]}')
+        print(f'wrong password at {devices_dict["ip"]}')
     except netmiko.ssh_exception.NetmikoTimeoutException:
-        print(f'no connection to {device_dict["ip"]} (timeout)')
+        print(f'no connection to {devices_dict["ip"]} (timeout)')
 
 
-def send_command_to_devices(devices, commands_dict, filename, limit=3):
+def execute_conf_command(devices_dict, commands):
+    try:
+        with netmiko.ConnectHandler(**devices_dict) as ssh:
+            ssh.enable()
+            result = ssh.find_prompt() + ansi_escape.sub('', ssh.send_config_set(commands) + '\n')
+            return result
+    except netmiko.ssh_exception.NetmikoAuthenticationException:
+        print(f'wrong password at {devices_dict["ip"]}')
+    except netmiko.ssh_exception.NetmikoTimeoutException:
+        print(f'no connection to {devices_dict["ip"]} (timeout)')
+
+
+def send_commands_to_devices(devices, filename, show=None, config=None, limit=3):
     with open(path+filename, 'w')as f:
         with ThreadPoolExecutor(max_workers=limit) as executor:
-            future_result = [executor.submit(execute_command_by_ssh, device, commands_dict[device["ip"]]) for device in devices]
-        for res in as_completed(future_result):
-            try:
-                # print(res.result())
-                f.write(res.result())
-            except TypeError:
-                f.write('pfffff\n')
+            if show:
+                result = executor.map(execute_show_command, devices, repeat(show))
+            if config:
+                result = executor.map(execute_conf_command, devices, repeat(config))
+            for i in result:
+                if i:
+                    f.write(i)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     with open(path+'my_devices.yaml', 'r') as f:
-        from_file = yaml.safe_load(f)
+        out_from_file = yaml.safe_load(f)
+    commands = ['do sh arp', 'do sh date']
+    # send_commands_to_devices(devices=out_from_file, filename='zalupa4.txt', show='sh date', limit=2)
+    send_commands_to_devices(devices=out_from_file, filename='zalupa4', config=commands, limit=2)
 
-send_command_to_devices(from_file, commands, 'zalupa3', 2)
-
-
-
-'''
-* devices - список словарей с параметрами подключения к устройствам
-* commands_dict - словарь в котором указано на какое устройство отправлять какую команду. Пример словаря - commands
-* filename - имя файла, в который будут записаны выводы всех команд
-* limit - максимальное количество параллельных потоков (по умолчанию 3)
-'''
