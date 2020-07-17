@@ -49,18 +49,33 @@ Task 21.1
 
 def generate_config(template, data_dict):
     match = re.search('(\S+)/(\S+)', template)
-    env = Environment(loader=FileSystemLoader(match.group(1)))
+    env = Environment(loader=FileSystemLoader(match.group(1)), trim_blocks=True)
     template = env.get_template(match.group(2))
     out = template.render(data_dict)
     return out
 
-with open(path+'data_files/for.yml') as f:
-    data_dict = yaml.safe_load(f)
-path_to_template = path+"templates/for.txt"
-print(generate_config(path_to_template, data_dict))
+# with open(path+'data_files/for.yml') as f:
+#     data_dict = yaml.safe_load(f)
+# path_to_template = path+"templates/for.txt"
+# print(generate_config(path_to_template, data_dict))
 
 '''
 Task 21.2
 '''
+
+# with open(path+'data_files/router_info.yml') as f:
+#     data_dict = yaml.safe_load(f)
+# path_to_template = path+"templates/cisco_router_base.txt"
+# print(generate_config(path_to_template, data_dict))
+
+'''
+Task 21.3
+'''
+
+with open(path+'data_files/ospf.yml') as f:
+    data_dict = yaml.safe_load(f)
+path_to_template = path+"templates/ospf.txt"
+print(generate_config(path_to_template, data_dict))
+
 
 
