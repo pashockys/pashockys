@@ -72,10 +72,44 @@ Task 21.2
 Task 21.3
 '''
 
-with open(path+'data_files/ospf.yml') as f:
-    data_dict = yaml.safe_load(f)
-path_to_template = path+"templates/ospf.txt"
-print(generate_config(path_to_template, data_dict))
+# with open(path+'data_files/ospf.yml') as f:
+#     data_dict = yaml.safe_load(f)
+# path_to_template = path+"templates/ospf.txt"
+# print(generate_config(path_to_template, data_dict))
+
+'''
+Task 21.4
+'''
+
+# with open(path+'data_files/add_vlan_to_switch.yml') as f:
+#     data_dict = yaml.safe_load(f)
+# path_to_template = path+"templates/add_vlan_to_switch.txt"
+# print(generate_config(path_to_template, data_dict))
+
+'''
+Task 21.5
+'''
+
+data = {
+    'tun_num': 10,
+    'wan_ip_1': '192.168.100.1',
+    'wan_ip_2': '192.168.100.2',
+    'tun_ip_1': '10.0.1.1 255.255.255.252',
+    'tun_ip_2': '10.0.1.2 255.255.255.252'
+}
+
+def create_vpn_config(template1, template2, data_dict):
+    path_to_template_1 = path + template1
+    path_to_template_2 = path + template2
+    match = re.search(r'(\S+)/(\S+)', path_to_template_1)
+    env1 = Environment(loader=FileSystemLoader(match.group(1)), trim_blocks=True)
+    out1 = env1.get_template(match.group(2)).render(data_dict)
+    match = re.search(r'(\S+)/(\S+)', path_to_template_2)
+    env2 = Environment(loader=FileSystemLoader(match.group(1)), trim_blocks=True)
+    out2 = env2.get_template(match.group(2)).render(data_dict)
+    return (out1, out2)
 
 
-
+# print(create_vpn_config("templates/gre_ipsec_vpn_1.txt", "templates/gre_ipsec_vpn_2.txt", data))
+for i in create_vpn_config("templates/gre_ipsec_vpn_1.txt", "templates/gre_ipsec_vpn_2.txt", data):
+    print(i)
