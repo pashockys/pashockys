@@ -38,10 +38,11 @@ def parse_output_to_dict(template, command_output):
         fsm = textfsm.TextFSM(template)
         header = fsm.header
         result = fsm.ParseText(command_output)
-        for i, item in enumerate(header):
-            for g in result:
+        # print('rerererererer', result)
+        for g in result:
+            for i, item in enumerate(header):
                 output[item] = g[i]
-            out.append(output)
+            out.append(output.copy())
     return out
 
 # with open(path + 'output/sh_ip_int_br.txt') as f:
