@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+import telnetlib
+'''
+Task 25.1
+'''
 def transform_topology(new_dict):
     repeated_dict = {}
     for key, value in new_dict.items():
@@ -33,36 +37,41 @@ class Topology:
         self.topology = result
 
 
-top = Topology(topology_example)
-print(top.topology)
+# top = Topology(topology_example)
+# print(top.topology)
+
+'''
+Task 25.2
+'''
+
+r1_params = {
+    'ip': '192.168.122.4',
+    'username': 'admin',
+    'password': 'password',
+    'secret': 'password'}
+
+class CiscoTelnet:
+    def __init__(self, dict):
+        print('Connection to device {}'.format(dict['ip']))
+        with telnetlib.Telnet(dict['ip']) as self.t:
+            self.t.read_until(b'Username:')
+            self.t.write(b"dict['username']" + b'\n')
+            self.t.read_until(b'Password:')
+            self.t.write(b"dict['password']" + b'\n')
+            self.t.write(b'enable\n')
+            self.t.read_until(b'Password:')
+            self.t.write(b"dict['secret']" + b'\n')
+            self.t.write(b'terminal length 0\n')
+
+    def send_show_command(self, command):
+        command = command.encode('ascii')
+        print(command)
+        self.t.write(command + b'\n')
+        return self.t.read_very_eager().decode('ascii')
 
 
 
 
 
-
-
-
-
-
-
-
-
-def transform_topology(filename):
-    with open(filename, 'r') as f:
-        temp_file = yaml.safe_load(f)
-    new_dict = {}
-    repeated_dict = {}
-    for keys_out in temp_file.keys():
-        for keys_in in temp_file[keys_out].keys():
-            for keys, item in temp_file[keys_out][keys_in].items():
-                new_dict[(keys_out, keys_in)] = (keys, item)
-    for key, value in new_dict.items():
-        for key2, value2 in new_dict.items():
-            if key == value2 and value == key2:
-                if key2 == repeated_dict.get(value2):
-                    continue
-                else:
-                    repeated_dict[key2] = value2
-    draw_topology(repeated_dict, 'hhhhhhh')
-    return repeated_dict
+r1 = CiscoTelnet(r1_params)
+print(r1.send_show_command('sh ip int br'))
