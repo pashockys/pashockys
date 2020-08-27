@@ -7,6 +7,8 @@ import os
 import yaml
 import netmiko
 from netmiko import ConnectHandler
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from itertools import repeat
 
 if os.path.exists('/home/pashockys/progi_python/pyneng-examples-exercises/exercises/22_textfsm/'):
     path = '/home/pashockys/progi_python/pyneng-examples-exercises/exercises/22_textfsm/'
@@ -88,7 +90,7 @@ def parse_command_dynamic(command_output, attributes_dict, index_file='index', t
 Task 22.4
 '''
 
-def send_and_parse_show_command(device_dict, command, templates_path, index='index'):
+def send_and_parse_show_command(device_dict, command, templates_path='templates', index='index'):
     output = {}
     out = []
     attributes_dict = {'Command': command, 'Vendor': 'cisco_ios'}
@@ -112,13 +114,23 @@ def send_and_parse_show_command(device_dict, command, templates_path, index='ind
         out.append(output.copy())
     return out
 
-with open(path+'devices.yaml', 'r') as f:
-    list_of_conf_dict = yaml.safe_load(f)
-print(send_and_parse_show_command(device_dict=list_of_conf_dict[0],
-                                  command='sh ip int br',
-                                  templates_path='templates'))
+# with open(path+'devices.yaml', 'r') as f:
+#     list_of_conf_dict = yaml.safe_load(f)
+# for i, item in enumerate(list_of_conf_dict):
+#     print(send_and_parse_show_command(device_dict=list_of_conf_dict[i],
+#                                       command='sh ip int br',
+#                                       templates_path='templates'))
 
 '''
 Task 22.5
 '''
 
+def send_and_parse_command_parallel(limit,command, device_dict):
+    with ThreadPoolExecutor(max_workers=limit) as executor:
+        result = executor.map(send_and_parse_show_command, device_dict, repeat(command))
+    for device, output in zip(device_dict, result):
+        print(device['ip'], output)
+
+with open(path+'devices.yaml', 'r') as f:
+    list_of_conf_dict = yaml.safe_load(f)
+send_and_parse_command_parallel(limit=3, command='sh ip int br', device_dict=list_of_conf_dict)
