@@ -1,3 +1,4 @@
+from functools import wraps
 def simple_function():
     print('1')
 def simple_function2():
@@ -88,7 +89,9 @@ def decorated_func(a, b):
     print("This func is decorated")
     return a+b
 print(decorated_func('a', 'b'))
+
 # decorator with inner function
+
 print(40*'===')
 def actual_decorator(func):
     print("This is decorator")
@@ -97,9 +100,28 @@ def actual_decorator(func):
               f"it has {args} {kwargs} as arguments")
         return func(*args, **kwargs)
     return inner
-
 @actual_decorator
 def decorated_func(a, b):
     print("This func is decorated")
     return a+b
 print(decorated_func('a', 'b'))
+
+# decorator that check if all arguments are string
+
+print(40*'===')
+def decorator_that_check_type(func):
+    print('we are inside decorator')
+    @wraps(func)
+    def inner_func(*args):
+        print('inside inner func in decorator')
+        result = [i for i in args if type(i) is str]
+        return func(*result)
+    return inner_func
+
+@decorator_that_check_type
+def func_with_variables(*args):
+    print(f'{args}')
+list1 = [4, 5]
+func_with_variables(4, '3', 'dddd', list1)
+
+print(f'this is func name\n{func_with_variables.__name__}')
